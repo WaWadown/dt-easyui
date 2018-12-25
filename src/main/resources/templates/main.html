@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8"/>
+	<title>系统管理</title>
+	<link rel="stylesheet" type="text/css" href="js/easyui/themes/default/easyui.css"/>
+	<link rel="stylesheet" type="text/css" href="js/easyui/themes/icon.css"/>
+	<script type="text/javascript" src="js/easyui/jquery.min.js"></script>
+	<script type="text/javascript" src="js/easyui/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="js/easyui/datagrid-detailview.js"></script>
+	<script type="text/javascript" src="js/easyui/locale/easyui-lang-zh_CN.js"></script>
+	<script type="text/javascript" src="js/easyui/jquery.form.min.js"></script>
+	<script type="text/javascript" src="js/echarts.min.js"></script>
+	<script type="text/javascript" src="js/app/main.js"></script>
+	<script type="text/javascript" src="js/app/sys.js"></script>
+	
+	<style type="text/css">
+		.ftitle{
+			font-size:14px;
+			font-weight:bold;
+			padding:5px 0;
+			margin-bottom:10px;
+			border-bottom:1px solid #ccc;
+		}
+		.fitem{
+			margin-bottom:5px;
+		}
+		.fitem label {
+			display:inline-block;
+			width:60px;
+		}
+		.fitem input{
+			width:200px;
+		}
+		.fitem select{
+			width:200px;
+		}
+	</style>
+</head>
+<!-- 请参考：http://www.jeasyui.com/documentation/index.php -->
+<!-- layout -->
+<body class="easyui-layout">
+	<!-- panel -->
+	<div id="woMenuTreePanel" data-options="region:'west',split:true, title:'菜单'" style="width:200px;padding:10px;" class="easyui-panel">
+		<!-- tree -->
+		<ul id="woMenuTreeUl">
+		</ul>
+	</div>
+	<!-- tabs -->
+	<div id="woContentTabPanel" data-options="region:'center',title:'工作区'" class="easyui-tabs" style="width:700px;height:250px">
+		
+		<div title="主页" style="padding:10px">
+		<div id="woChangePW">
+		<a href="javascript:void(0)" style="width:80px;hight:15px;float:right">修改密码</a>
+		</div>
+			<p style="font-size:14px">欢迎来到景区管理系统！</p>
+			<ul>
+			<li><p>如果您是游客，您可以：</p></li>
+			<ul>
+				<li><p>维护自身的信息</p></li>
+				<li><p>管理自己的评论</p></li>
+			</ul>
+			<li><p>如果您是工作人员，您可以：</p></li>
+			<ul>
+				<li><p>维护景区信息，包括景区、景点、住宿、美食</p></li>
+				<li><p>管理游客对景区的评论</p></li>
+				<li><p>管理自己的售票记录</p></li>
+			</ul>
+			<li><p>如果您是管理者，您可以：</p></li>
+			<ul>
+				<li><p>维护景区信息，包括景区、景点、住宿、美食、门票等</p></li>
+				<li><p>管理游客对景区的评论</p></li>
+				<li><p>管理自己的售票记录</p></li>
+				<li><p>维护景区所有人员信息</p></li>
+				<li><p>查看景区所有的售票记录</p></li>
+			</ul>
+			</ul>
+		</div>
+	</div>
+	<div id="woDlgLogin" class="easyui-dialog" style="width:400px;height:230px;padding:10px 20px"
+			closed="true" buttons="#woButtonsLogin" modal="true" title="登录">
+		<div class="ftitle">请输入登录信息(新用户请注册)：</div>
+		<form id="woFormLogin" method="post" novalidate>
+			<div class="fitem">
+				<label>登录名:</label>
+				<input name="user" class="easyui-textbox" required="true">
+			</div>
+			<div class="fitem">
+				<label>密码:</label>
+				<input name="password" type="password" class="easyui-textbox" required="true">
+			</div>
+		</form>
+		<div id="woButtonsLogin">
+			<a id="loginButton" href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok" style="width:90px">登录</a>
+			<a id="registerButton" href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok"  style="width:90px">注册</a>
+		</div>
+	</div>
+	
+	<!-- 注册 -->
+	<div id="woDlgRegister" class="easyui-dialog" title="游客注册" 
+		stytle="width:800px;height:280px; padding:10px 20px" closed="true" 
+		buttons="#woButtonsRegister" >
+			<form id="woFormRegister" method="post" enctype="multipart/form-data">
+					<div class="fitem">
+						<label>姓名</label>
+						<input name="name" class="easyui-textbox" required="true"/>
+					</div>
+					
+					<div class="fitem">
+							<label>性别:</label>
+							<input name="sex"  class="easyui-combobox" required="true" 
+								data-options="
+									valueField:'val',
+									textField:'name',
+									url:'sys/dictionary/getItems?dicType=sex'
+								"/>
+					</div>
+					<div class="fitem">
+						<label>生日:</label>
+						<input name="birthday" class="easyui-datebox" />
+					</div>
+					<div class="fitem">
+					 	<label>email</label>
+					 	<input class="easyui-textbox" validType='email' name="email" data-options="required:true"  
+                            missingMessage="邮箱不能为空" invalidMessage="请输入正确的邮箱" type="text">
+					</div>
+					
+					<div class="fitem">
+						<label>手机</label>
+						<input class="easyui-textbox" name="mobile" data-options="prompt:'请输入正确的手机号码。',validType:'phoneNum'" />
+					</div>
+					<div class="fitem">
+						<label>头像:</label>
+						<input name="headImageFile" class="easyui-filebox" buttonText="选择图片" />
+					</div>
+			</form>
+	</div>
+	<div id="woButtonsRegister">
+			<a id="saveRegister" href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok"  style="width:90px">保存</a>
+			<a href="javascript:void(0)" class="easyui-linkbutton c6"  
+				onclick="javascript:$('#woFormRegister').form('clear')" style="width:90px">重置</a>
+	</div>
+	<!-- 修改密码 -->
+	<div id="woDlgChange" class="easyui-dialog" title="游客注册" 
+		stytle="width:600px;height:300px; padding:10px 20px" closed="true" 
+		buttons="#woButtonsChange">
+		<div class="ftitle">请输入密码信息：</div>
+		<form id="fm-change" method="post" novalidate>
+			<div class="fitem">
+				<label>旧密码</label>
+				<input name="password" class="easyui-textbox" required="true" />
+			</div>
+			<div class="fitem">
+				<label>新密码</label>
+				<input name="NewPassword" class="easyui-textbox" required="true" />
+			</div>
+			<div class="fitem">
+				<label>再次输入</label>
+				<input name="NewPassword2" class="easyui-textbox" required="true" />
+			</div>
+		</form>
+	</div>
+	<div id="woButtonsChange">
+			<a id="savePassword" href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok"  style="width:90px">保存</a>
+			<a href="javascript:void(0)" class="easyui-linkbutton c6"  
+				onclick="javascript:$('#fm-change').form('clear')" style="width:90px">重置</a>
+	</div>
+	
+</body>
+</html>

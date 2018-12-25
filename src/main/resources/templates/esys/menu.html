@@ -1,0 +1,191 @@
+<div style="padding: 5px 5px">
+    <table id="dj-esysMenu" class="easyui-datagrid" style="width: 100%; height: 500px"
+           pagination="true" rownumbers="true" fitColumns="true" singleSelect="true"
+           toolbar="#toolbar-esysMenu">
+		<thead>
+			<tr>
+				<th field="id" width="100">ID</th>			
+				<th field="name" width="30">名称</th>			
+				<th field="url" width="100">URL</th>			
+				<th field="icon" width="30">图标</th>			
+				<th field="parentName" width="30">上级</th>			
+			</tr>
+		</thead>
+	</table>
+	
+	<!-- 创建datagrid工具按钮 -->
+	<div id="toolbar-esysMenu">
+		<a class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="loadEsysMenuCreateForm()">创建</a>
+		<a class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="loadEsysMenuUpdateForm()">修改</a>
+	</div>
+	
+	<!-- 点击创建按钮 展示创建窗口  -->				
+	<div id="dlg-esysMenu-create" class="easyui-dialog" title="创建菜单"  closed="true" 
+		style="width:450px;height:380px; padding: 10px 20px" buttons="#btn-esysMeny-create" >
+        <div class="ftitle">请输入菜单信息</div>
+        <form id="fm-esysMenu-create" method="post">
+        	<div class="fitem">
+     			<label>ID:</label>
+        		<input name="id" class="easyui-textbox"/>
+        	</div>
+        	<div class="fitem">
+     			<label>名称:</label>
+        		<input name="name" class="easyui-textbox" required="true"/>
+        	</div>
+        	<div class="fitem">
+     			<label>编号:</label>
+        		<input name="no" class="easyui-textbox" required="true"/>
+        	</div>
+        	<div class="fitem">
+     			<label>URL:</label>
+        		<input name="url" class="easyui-textbox"/>
+        	</div>
+        	<div class="fitem">
+     			<label>图标:</label>
+        		<input name="icon" class="easyui-textbox"/>
+        	</div>
+        	<div class="fitem">
+        		<label>上级</label>
+        		<select id="selectEsysMenu" class="easyui-combogrid" name="parent.id" style="width: 200px"
+        			 data-options="
+        			 	pagination:true,
+			            panelWidth:450,
+			            idField:'id',
+			            textField:'name',
+			            url:'esys/menu/list',
+			            columns:[[
+			                {field:'id',title:'ID',width:100},
+			                {field:'name',title:'Name',width:150}
+			            ]]
+			        ">
+        		</select>
+        	</div>
+        </form>
+	</div>
+	
+	<!-- 点击修改按钮  加载修改窗口 -->
+	<div id="dlg-esysMenu-update" class="easyui-dialog" title="修改菜单" closed="true" 
+	style="width:450px; height:380px; padding:10px 20px" buttons="#but-esysMeny-update">
+		<div>请输入菜单信息</div>
+		<form id="fm-esysMenu-update" method="post">
+			<div class="fitem">
+				<label>ID:</label>
+				<input name="id" class="easyui-textbox" readonly/>
+			</div>
+			<div class="fitem">
+				<label>名称:</label>
+				<input name="name" class="easyui-textbox" required="true"/>
+			</div>
+			<div class="fitem">
+				<label>编号:</label>
+				<input name="no" class="easyui-textbox" required="true"/>
+			</div>
+			<div class="fitem">
+				<label>URL:</label>
+				<input name="url" class="easyui-textbox"/>
+			</div>
+			<div class="fitem">
+				<label>图标:</label>
+				<input name="icon" class="easyui-textbox"/>
+			</div>
+			<div class="fitem">
+				<label>上级:</label>
+				<select class="easyui-combogrid" name="parent.id" style="width: 200px"
+        			 data-options="
+        			 	pagination:true,
+			            panelWidth:450,
+			            idField:'id',
+			            textField:'name',
+			            url:'esys/menu/list',
+			            columns:[[
+			                {field:'id',title:'ID',width:100},
+			                {field:'name',title:'Name',width:150}
+			            ]]
+			        ">
+        		</select>
+			</div>
+		</form>
+	</div>
+	
+	<!-- 添加创建框中的确认取消按钮 -->
+	<div id="btn-esysMeny-create">
+		<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-ok" style="width: 90px" onclick="createEsysMenu()">保存</a>
+		<a href="javascript:$('#dlg-esysMenu-create').dialog('close')" class="easyui-linkbutton" iconCls="icon-cancel" style="width: 90px">取消</a>
+	</div>
+	
+	<div id="but-esysMeny-update">
+		<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-ok" style="width: 90px" onclick="updateEsysmenu()">保存</a>
+		<a href="javascript:$('#dlg-esysMenu-update').dialog('close')" class="easyui-linkbutton" iconCls="icon-cancel" style="width: 90px">取消</a>
+	</div>
+	
+</div>
+
+<script type="text/javascript">
+	$("#dj-esysMenu").datagrid({
+		url : "esys/menu/list"
+	});
+	
+	//加载创建框
+	function loadEsysMenuCreateForm(){
+		//加载创建框
+		$('#dlg-esysMenu-create').dialog('open');
+		
+		$('#fm-esysMenu-create').form('clear');
+	}
+	//加载修改框
+	function loadEsysMenuUpdateForm(){
+		var row = $('#dj-esysMenu').datagrid('getSelected');
+		if(row){
+			$('#dlg-esysMenu-update').dialog('open');
+			if(row.parent){
+				row['parent.id'] = row.parent.id;
+			}
+			$('#fm-esysMenu-update').form('load', row);
+		}else{
+			$.message.alert({
+				title:'错误',
+				icon:'error',
+				msg:'请选中一条要修改的数据...'
+			})
+		}
+	}
+	
+	//提交创建菜单数据
+	function createEsysMenu(){
+		$('#fm-esysMenu-create').form('submit', {
+			url:'esys/menu/create',
+			onSubmit:function(){
+				return $(this).form('validate');
+			},
+			success:function(result){
+				console.log("result: "+ result);
+				try{
+					//将result数据转化为josn格式的数据
+					result = eval('('+ result +')');
+					if(result.success == null){
+						$.message.alert({
+							title:'错误',
+							icon:'error',
+							msg:result.message
+						})
+					}else{
+						$('#dlg-esysMenu-create').dialog('close');
+						$('#dj-esysMenu').datagrid('reload');
+					}
+				}catch(e){
+					$.message.alert({
+						title:'错误',
+						icon:'error',
+						msg:'创建菜单失败！'
+					})
+				}
+			}
+		})
+	}
+	
+	//提交修改菜单数据
+	function updateEsysmenu(){
+		
+	}
+	
+</script>
